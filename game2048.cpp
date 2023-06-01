@@ -2,16 +2,25 @@
 #include "ui_game2048.h"
 #include <QKeyEvent>
 #include<iostream>
+#include<QDir>
 
-game2048::game2048(QWidget *parent)
+game2048::game2048(QWidget *parent,int type)
     : QWidget(parent)
     , ui(new Ui::game2048)
 {
     ui->setupUi(this);
-    resize(800,400);
+    resize(800,600);
+    call_num=type;//1,2
+    win_animation=new QPropertyAnimation();
     board=new int* [boardlen];
+    win_label=ui->win_label;
+    win_label->setVisible(false);
     for(int i=0;i<boardlen*boardlen;i++){
         boardblock[i]=findChild<QLabel*>("block_"+QString::number(i+1));
+        boardblock[i]->setScaledContents(true);
+        //boardblock[i]->resize(70,60);
+        boardblock[i]->setMinimumSize(70,70);
+        boardblock[i]->setMaximumSize(70,70);
     }
     for(int i=0;i<boardlen;i++){
         board[i]=new int[boardlen];
@@ -20,6 +29,11 @@ game2048::game2048(QWidget *parent)
         for(int j=0;j<boardlen;j++){
             board[i][j]=0;
         }
+    }
+    for(int i=0;i<6;i++){
+        imgs[i]=new QImage;
+        QString filename="./material/"+QString::number(call_num)+"_"+QString::number(i+1)+".png";
+        imgs[i]->load(filename);
     }
     ui->res_label->setVisible(false);
     ui->next_button->setVisible(false);
@@ -33,9 +47,11 @@ game2048::~game2048()
     for(int i=0;i<boardlen;i++){
         delete boardblock[i];
     }
+    for(int i=0;i<5;i++)
+        delete imgs[i];
+    delete win_animation;
     delete ui;
 }
-
 
 void game2048::addone(){
     bool space=false;
@@ -59,19 +75,45 @@ void game2048::addone(){
 void game2048::flush(){
     for(int i=0;i<boardlen;i++){
         for(int j=0;j<boardlen;j++){
-            if(board[i][j]!=0)
-                boardblock[i*boardlen+j]->setText(QString::number(board[i][j]));
+            if(board[i][j]!=0){
+                int picID;
+                switch(board[i][j]){
+                case(2):{picID=1;break;}
+                case(4):{picID=2;break;}
+                case(8):{picID=3;break;}
+                case(16):{picID=4;break;}
+                case(32):{picID=5;break;}
+                }
+                picID-=1;
+               // imgs[picID]->scaled(boardblock[i*boardlen+j]->size());
+                boardblock[i*boardlen+j]->setPixmap(QPixmap::fromImage(*imgs[picID]));
+                if(picID==4){
+                    has_res=true;
+                    win_label->setGeometry(boardblock[i*boardlen+j]->geometry());
+                    win_label->setMaximumSize(1000,1000);
+                    win_label->raise();
+                    win_label->setVisible(true);
+                    win_label->setPixmap(QPixmap::fromImage(*imgs[5]));
+                    win_animation->setTargetObject(win_label);
+                    //win_animation->setTargetObject( ui->res_label);
+                    win_animation->setDuration(1000);
+                    win_animation->setPropertyName("geometry");
+                    win_animation->setStartValue(boardblock[i*boardlen+j]->geometry());
+                    win_animation->setEasingCurve(QEasingCurve::Linear);
+                    win_animation->setEndValue(QRect(QPoint(10, 100)
+                                                   ,QSize(400,400)));
+                    win_animation->start();
+                    ui->res_label->setText("通过！请进入下一关");
+                    ui->res_label->setVisible(true);
+                    ui->next_button->setVisible(true);
+                }
+            }
             else
-                boardblock[i*boardlen+j]->setText("");
+                boardblock[i*boardlen+j]->setPixmap(QPixmap(""));
         }
     }
     ui->label->setText("得分:"+QString::number(score));
     if(judge()){
-        if(score>=500){
-            ui->res_label->setText("通过！请进入下一关");
-            ui->res_label->setVisible(true);
-            ui->next_button->setVisible(true);
-        }
     }else{
         ui->res_label->setText("失败，请再次尝试");
         ui->res_label->setVisible(true);

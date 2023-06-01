@@ -53,6 +53,7 @@ public:
     QPushButton *start_button;
     QLabel *res_label;
     QPushButton *next_button;
+    QLabel *win_label;
 
     void setupUi(QWidget *game2048)
     {
@@ -62,7 +63,8 @@ public:
         game2048->setStyleSheet(QString::fromUtf8(""));
         gridWidget = new QWidget(game2048);
         gridWidget->setObjectName("gridWidget");
-        gridWidget->setGeometry(QRect(10, 100, 429, 350));
+        gridWidget->setGeometry(QRect(10, 100, 400, 400));
+        gridWidget->setMaximumSize(QSize(16777211, 16777215));
         gridLayout = new QGridLayout(gridWidget);
         gridLayout->setObjectName("gridLayout");
         gridLayout->setHorizontalSpacing(4);
@@ -376,7 +378,7 @@ public:
         label->setAlignment(Qt::AlignCenter);
         info_label = new QLabel(game2048);
         info_label->setObjectName("info_label");
-        info_label->setGeometry(QRect(10, 40, 401, 51));
+        info_label->setGeometry(QRect(10, 40, 341, 61));
         info_label->setStyleSheet(QString::fromUtf8("background: rgb(48, 32, 0); \n"
 "font: 12pt \"\345\215\216\346\226\207\347\220\245\347\217\200\";\n"
 "color:rgb(255, 255, 255)"));
@@ -398,6 +400,17 @@ public:
         next_button = new QPushButton(game2048);
         next_button->setObjectName("next_button");
         next_button->setGeometry(QRect(450, 420, 80, 18));
+        win_label = new QLabel(game2048);
+        win_label->setObjectName("win_label");
+        win_label->setGeometry(QRect(450, 240, 64, 65));
+        win_label->setMinimumSize(QSize(30, 30));
+        win_label->setFont(font);
+        win_label->setContextMenuPolicy(Qt::DefaultContextMenu);
+        win_label->setStyleSheet(QString::fromUtf8("background-color:  qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 rgba(237, 227, 109, 101), stop:0.1 rgba(255, 249, 112, 186), stop:0.2 rgba(248, 255, 76, 167), stop:0.3 rgba(242, 255, 96, 179), stop:0.4 rgba(255, 247, 154, 232), stop:0.5 rgba(240, 255, 76, 205), stop:0.52 rgba(255, 255, 154, 228), stop:0.6 rgba(246, 255, 149, 220), stop:1 rgba(255, 255, 255, 0)); color: #776E65; font-size: 48px;"));
+        win_label->setFrameShape(QFrame::NoFrame);
+        win_label->setFrameShadow(QFrame::Raised);
+        win_label->setAlignment(Qt::AlignCenter);
+        QWidget::setTabOrder(start_button, next_button);
 
         retranslateUi(game2048);
 
@@ -433,10 +446,11 @@ public:
         block_3->setText(QCoreApplication::translate("game2048", "1", nullptr));
         block_23->setText(QCoreApplication::translate("game2048", "1", nullptr));
         label->setText(QCoreApplication::translate("game2048", "\345\276\227\345\210\206:0", nullptr));
-        info_label->setText(QCoreApplication::translate("game2048", "<html><head/><body><p align=\"center\">\344\275\240\351\234\200\350\246\201\350\276\276\345\210\2605000\345\210\206,\346\211\215\350\203\275\351\200\232\350\277\207\350\277\231\344\270\200\345\205\263\343\200\202\350\257\267\345\274\200\345\247\213\344\275\240\347\232\204\346\270\270\346\210\217\345\220\247</p></body></html>", nullptr));
+        info_label->setText(QCoreApplication::translate("game2048", "<html><head/><body><p align=\"center\">\350\257\267\345\220\210\346\210\220\344\275\240\347\232\204\346\255\246\345\231\250!</p></body></html>", nullptr));
         start_button->setText(QCoreApplication::translate("game2048", "\345\274\200\345\247\213\346\270\270\346\210\217", nullptr));
         res_label->setText(QString());
         next_button->setText(QCoreApplication::translate("game2048", "\347\273\247\347\273\255", nullptr));
+        win_label->setText(QCoreApplication::translate("game2048", "1", nullptr));
     } // retranslateUi
 
 };
